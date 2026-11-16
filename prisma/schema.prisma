@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(USER)
+  posts     Post[]   @relation("UserPosts")
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id     Int     @id @default(autoincrement())
+  name   String
+  images Image[]
+}
+
+model Image {
+  id          Int       @id @default(autoincrement())
+  file        String
+  inCarousel  Boolean   @default(false)
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
+}
+
+model Post {
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String
+  slug        String    @unique
+  image       String?
+  numLikes    Int       @default(0)
+  numComments Int       @default(0)
+  publishedAt DateTime  @default(now())
+  userId      Int
+  user        User      @relation("UserPosts", fields: [userId], references: [id])
+  comments    Comment[]
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String
+  text        String
+  publishedAt DateTime @default(now())
+  postId      Int
+  post        Post     @relation(fields: [postId], references: [id])
+}
+
+model Contact {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String?
+  email       String
+  subject     String?
+  message     String?
+  createdAt   DateTime @default(now())
+}

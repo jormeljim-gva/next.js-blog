@@ -1,10 +1,13 @@
+node_modules/
+.next/
+out/
+*.local
+.gitignore
 
-###> symfony/framework-bundle ###
-/.env.local
-/.env.local.php
-/.env.*.local
-/config/secrets/prod/prod.decrypt.private.php
-/public/bundles/
-/var/
-/vendor/
-###< symfony/framework-bundle ###
+# Prisma
+prisma/migrations/
+*.db
+*.db-journal
+
+# Environment
+.env*.local
