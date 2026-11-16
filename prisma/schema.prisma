@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -40,7 +40,7 @@ model Image {
 model Post {
   id          Int       @id @default(autoincrement())
   title       String
-  content     String
+  content     String    @db.LongText
   slug        String    @unique
   image       String?
   numLikes    Int       @default(0)
@@ -55,7 +55,7 @@ model Comment {
   id          Int      @id @default(autoincrement())
   name        String
   email       String
-  text        String
+  text        String    @db.LongText
   publishedAt DateTime @default(now())
   postId      Int
   post        Post     @relation(fields: [postId], references: [id])
@@ -67,6 +67,6 @@ model Contact {
   lastName    String?
   email       String
   subject     String?
-  message     String?
+  message     String?   @db.LongText
   createdAt   DateTime @default(now())
 }
