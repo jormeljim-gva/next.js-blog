@@ -1,0 +1,104 @@
+{% extends "base.html.twig" %}
+{% block title%}Single Post{% endblock %}
+{% block body %}
+<div id="single">
+    <div class="container">
+
+        <!-- Full Article -->
+        <div class="row">
+            {% if not post %}
+            <h2>Post not found</h2>
+            {% else %}
+            <h2>{{ post.title }}</h2>
+            <hr class="subtitle">
+            <div class=" block1">
+                <div class="col-xs-12 col-sm-9">
+                    <img src="{{ asset('images/blog/' ~ post.image) }}" alt="{{ post.title }}" class="img-responsive">
+                    <p>{{ post.content }}</p>
+                    <h4>- By {{ post.postUser.name }}</h4>
+                    <hr>
+                    <ul class="list-inline">
+                        <li>{{ post.publishedAt | date('d') }} {{ post.publishedAt | date('F') }} |</li>
+                        <li><a class="page-scroll" href="#form">COMMENT</a> <i class="fa fa-comments sr-icons"></i> {{post.numComments}} |</li>
+                        <li><a href="{{ path('post_like', {slug: post.slug}) }}">LIKE</a> <i
+                                class="fa fa-heart sr-icons"></i><span id='likes'> {{post.numLikes}}</span></li>
+                    </ul>
+                </div>
+                <div class="col-xs-12 col-sm-3">
+                    <h4>Recent Post</h4>
+                    <hr class="subtitle1">
+                    <div class="new new1">
+                        <hr>
+                        <a href="">Aliquam soluta</a>
+                        <h5> By <span>Quae</span></h5>
+                        <p>10 April</p><i class="fa fa-clock-o sr-icons"></i> 8:00 AM
+                        <hr>
+                    </div>
+                    <div class="new">
+                        <hr>
+                        <a href="">Consequuntur</a>
+                        <h5> By <span>Omnis</span></h5>
+                        <p>12 May</p><i class="fa fa-clock-o sr-icons"></i> 4:00 PM
+                        <hr>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <!-- End of Full Article -->
+
+        {% for recent in recents %}
+        {{ include ('partials/_recent_post.html.twig', {'recent': recent}) }}
+        {% endfor %}
+
+        <!-- Comments -->
+        <!-- <div class="row">
+            <div class="col-xs-12 col-sm-12 block2">
+                {# {{ include ('_post_comments.html.twig') }} #}
+            </div>
+        </div> -->
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 block2">
+
+                <h3>{{ post.numComments }} comentarios</h3>
+
+                {% for comment in post.comments %}
+                {{ include('partials/_comments.html.twig', {'comment': comment}) }}
+                {% else %}
+                <p>Todavía no hay comentarios.</p>
+                {% endfor %}
+
+                {{ include ('_post_comments.html.twig') }}
+            </div>
+        </div>
+        <!-- End of Comments -->
+    </div>
+</div>
+{% if post%}
+<script type='text/javascript'>
+    document.addEventListener('DOMContentLoaded', function () {
+        const likeLink = document.querySelector('a[href="{{ path("post_like", {slug: post.slug}) }}"]');
+        // Hay que coger el id 'likes' para poder cambiar luego el valor al número de likes actual
+        const likesSpan = document.querySelector('#likes');
+        likeLink.addEventListener('click', function (event) {
+            event.preventDefault();
+            fetch(likeLink.href, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        likesSpan.innerHTML = " " + data.likes;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+
+</script>
+{% endif %}
+{% endblock %}
